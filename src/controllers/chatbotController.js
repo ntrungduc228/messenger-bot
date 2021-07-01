@@ -1,14 +1,15 @@
-require('dotenv').config();
+require("dotenv").config();
+const request = require("request");
 
-class Chatbot {
-  getHomePage(req, res, next) {
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+
+
+ const getHomePage = (req, res, next) => {
     res.send("hello world");
   }
 
-  getWebhook(req, res, next) {
-    // Your verify token. Should be a random string.
-    let VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-    
+const getWebhook=(req, res, next) => {
     // Parse the query params
     let mode = req.query["hub.mode"];
     let token = req.query["hub.verify_token"];
@@ -28,17 +29,28 @@ class Chatbot {
     }
   }
 
-  postWebhook(req, res, next) {
+const postWebhook = (req, res, next) =>{
     let body = req.body;
 
     // Checks this is an event from a page subscription
     if (body.object === "page") {
       // Iterates over each entry - there may be multiple if batched
       body.entry.forEach(function (entry) {
-        // Gets the message. entry.messaging is an array, but
-        // will only ever contain one message, so we get index 0
+        // Gets the body of the webhook event
         let webhook_event = entry.messaging[0];
         console.log(webhook_event);
+
+        // Get the sender PSID
+        let sender_psid = webhook_event.sender.id;
+        console.log("Sender PSID: " + sender_psid);
+
+        // Check if the event is a message or postback and
+        // pass the event to the appropriate handler function
+        if (webhook_event.message) {
+          handleMessage(sender_psid, webhook_event.message);
+        } else if (webhook_event.postback) {
+          handlePostback(sender_psid, webhook_event.postback);
+        }
       });
 
       // Returns a '200 OK' response to all requests
@@ -48,6 +60,55 @@ class Chatbot {
       res.sendStatus(404);
     }
   }
-}
 
-module.exports = new Chatbot();
+  const handleMessage = (sender_psid, received_message) => {
+
+    let response;
+  
+    // Check if the message contains text
+    if (received_message.text) { console.log('---------',received_message.text);
+  
+      // Create the payload for a basic text message
+      response = {
+        "text": `You sent the message: "${received_message.text}". Now send me an image!`
+      }
+    }  
+    
+    // Sends the response message
+    callSendAPI(sender_psid, response);    
+  }
+
+  // Handles messaging_postbacks events
+  const handlePostback = (sender_psid, received_postback) => {}
+
+  // Sends response messages via the Send API
+ const callSendAPI = (sender_psid, response) => {
+    // Construct the message body
+    let request_body = {
+      "recipient": {
+        "id": sender_psid
+      },
+      "message": response
+    }
+
+    // Send the HTTP request to the Messenger Platform
+    request({
+      "uri": "https://graph.facebook.com/v2.6/me/messages",
+      "qs": { "access_token": PAGE_ACCESS_TOKEN },
+      "method": "POST",
+      "json": request_body
+    }, (err, res, body) => {
+      if (!err) {
+        console.log('message sent!')
+      } else {
+        console.error("Unable to send message:" + err);
+      }
+    }); 
+  }
+
+
+module.exports = {
+    getHomePage: getHomePage,
+    getWebhook: getWebhook,
+    postWebhook: postWebhook
+}

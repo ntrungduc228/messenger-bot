@@ -4,9 +4,10 @@ const request = require("request");
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
+const girlAPI = require("./GirlController");
+
 class Chatbot {
   
-
   // Sends response messages via the Send API
   callSendAPI(sender_psid, response) {
     // Construct the message body
@@ -36,16 +37,26 @@ class Chatbot {
   }
 
   handleMessage(sender_psid, received_message) {
-    let response;
+    let response = "";
 
     // Check if the message contains text
     if (received_message.text) {
       console.log("---------", received_message.text);
 
-      // Create the payload for a basic text message
-      response = {
-        text: `You sent the message: "${received_message.text}". Now send me an image!`,
-      };
+      const reqMessage = received_message.text;
+
+      switch(reqMessage){
+        case "girl":
+          response = girlAPI.getRandomGirlImage(); console.log(response);
+          break;
+        default:
+          // Create the payload for a basic text message
+          response = {
+            text: `You sent the message: "${received_message.text}". Now send me an image!`,
+          };
+      }
+
+      
     } else if (received_message.attachments) {
       // Get the URL of the message attachment
       let attachment_url = received_message.attachments[0].payload.url;

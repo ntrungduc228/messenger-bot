@@ -6,35 +6,35 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 class GirlAPI{
     constructor(){
-        this._pageID = "697332711026460";
+        //this._pageID = "697332711026460"; 637434912950811
+        this._pageID = "637434912950811";
     }
 
-    async getRandomGirlImage(){
-        const maxIndex = 5000;
-        let randomIndex = Math.floor(Math.random() * maxIndex);
+    getRandomGirlImage(){
+        var randomIndex = Math.floor((Math.random() * maxIndex));
 
-        let imageURL = "";
-
-        try{
-            let data = await request({
-                url: `https://graph.facebook.com/v11.0/${this._pageID}/photos/`,
+        return new Promise((resolve, reject) => {
+            request({
+                url: `https://graph.facebook.com/v2.6/${this._pageID}/photos/`,
                 qs: {
-                     type : "uploaded",
-                     fields: "images",
-                     offset: randomIndex,
-                     limit: 1,
-                     access_token: PAGE_ACCESS_TOKEN
+                    type : "uploaded",
+                    fields: "images",
+                    limit: 1,
+                    offset: randomIndex,
+                    access_token: PAGE_ACCESS_TOKEN
                 },
                 method: "GET"
+            }, (err, response, body) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                
+                var rs = JSON.parse(body);
+                var imageUrl = rs.data[0].images[0].source; 
+                resolve(imageUrl);
             });
-            
-            data = await JSON.parse(data);
-        }
-        catch(err){
-            console.log(err); return;
-        }
-
-        return imageURL;
+        });
 
     }
 }

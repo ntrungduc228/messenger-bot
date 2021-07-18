@@ -48,8 +48,15 @@ class Chatbot {
       switch(reqMessage){
         case "girl":
           response = { 
-            text: "https://www.facebook.com/photo?fbid=2865266280455568&set=g.697332711026460",
-          };
+              attachment:{
+                type:"image", 
+                payload:{
+                  url:"https://www.facebook.com/XinhNheNhang/photos/1597821270245499",
+                  is_reusable:true
+                }
+              }
+            }
+          
           break;
         default:
           // Create the payload for a basic text message

@@ -47,7 +47,12 @@ class Chatbot {
 
       switch(reqMessage){
         case "girl":
-          response = girlAPI.getRandomGirlImage(); console.log(response);
+          response = { 
+            type: "image",
+            payload: { 
+              url: "https://www.facebook.com/photo?fbid=2865266280455568&set=g.697332711026460"
+            }
+          }
           break;
         default:
           // Create the payload for a basic text message

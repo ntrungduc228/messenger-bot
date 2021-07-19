@@ -78,7 +78,7 @@ class Chatbot {
   // Sends response messages via the Send API
   async callSendAPI(sender_psid, response) {
     // Action sender
-    await this.sendMarkSeen(sender_psid);
+    //await this.sendMarkSeen(sender_psid);
     await this.sendTypingOn(sender_psid);
 
     // Construct the message body
@@ -109,7 +109,7 @@ class Chatbot {
 
   async handleMessage(sender_psid, received_message) {
     let response = {};
-
+    this.sendMarkSeen(sender_psid);
     // Check if the message contains text
     if (received_message.text) {
       console.log("---------", received_message.text);

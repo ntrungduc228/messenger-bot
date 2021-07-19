@@ -18,12 +18,15 @@ class GirlAPI{
                 }
 
                 var rs = JSON.parse(body);
-
                 //var imageURL = rs; 
                 var imageURL =  rs[1].data.photos[randomIndex].original.url;
                 resolve(imageURL)
             })
         })
+    }
+
+    getGirlImage(){
+        
     }
 }
 

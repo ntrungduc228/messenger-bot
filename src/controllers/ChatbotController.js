@@ -11,11 +11,40 @@ class Chatbot {
 
   constructor(){
     this._helpCommand = `Đây là các lệnh mà tôi hỗ trợ:
-    - girl: Ảnh ngẫu nhiên
-    
+    - girl: Ảnh gái ngẫu nhiên
+        
     Và nhiều câu lệnh khác sẽ được cập nhật thêm`;
   }
   
+  sendMarkSeen(sender_psid){
+      return new Promise((resolve, reject) => {
+          try {
+              let request_body = {
+                  "recipient": {
+                      "id": sender_psid
+                  },
+                  "sender_action": "mark_seen"
+              };
+  
+              let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
+              request({
+                  "uri": url,
+                  "method": "POST",
+                  "json": request_body
+  
+              }, (err, res, body) => {
+                  if (!err) {
+                      resolve("done!");
+                  } else {
+                      reject("Unable to send message:" + err);
+                  }
+              });
+          } catch (e) {
+              reject(e);
+          }
+      })
+  }
+
   sendTypingOn(sender_psid){
       return new Promise((resolve, reject) => {
         try {
@@ -23,7 +52,7 @@ class Chatbot {
                 "recipient": {
                     "id": sender_psid
                 },
-                "sender_action": "typing_on"
+                "sender_action": "typing_on",
             };
 
             let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
@@ -49,7 +78,8 @@ class Chatbot {
   // Sends response messages via the Send API
   async callSendAPI(sender_psid, response) {
     // Action sender
-    await this.sendTypingOn(sender_psid)
+    await this.sendMarkSeen(sender_psid);
+    await this.sendTypingOn(sender_psid);
 
     // Construct the message body
     let request_body = {

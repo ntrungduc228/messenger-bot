@@ -61,7 +61,12 @@ class Chatbot {
           break;
         default:
            reqMessage = encodeURI(reqMessage);
-           response.text = await simsimiAPI.getMessage(reqMessage);
+           try{
+            response.text = await simsimiAPI.getMessage(reqMessage);
+           }
+           catch(err){
+             console.log('error', err);
+           }
                       
            //await console.log('response', response);
           // Create the payload for a basic text message

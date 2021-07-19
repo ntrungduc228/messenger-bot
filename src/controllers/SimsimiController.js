@@ -11,10 +11,14 @@ class SimsimiAPI{
             }, (err, res, body) => {
                 if(err){
                     reject(err);
-                    return;
                 }
-
-                var rs = JSON.parse(body);
+                var rs = {};
+                try{
+                  rs = JSON.parse(body);
+                }
+                catch(err){ console.log(err); 
+                  rs.success = "BOT ốm rùi không nói chuyện với bạn được. Sorry !!!"
+                }
                 resolve(rs.success);
             });
         });

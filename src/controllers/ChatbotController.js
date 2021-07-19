@@ -10,17 +10,52 @@ const simsimiAPI = require("./SimsimiController");
 class Chatbot {
 
   constructor(){
+    this._helpCommand = `Đây là các lệnh mà tôi hỗ trợ:
+    - girl: Ảnh ngẫu nhiên
     
+    Và nhiều câu lệnh khác sẽ được cập nhật thêm`;
   }
   
+  sendTypingOn(sender_psid){
+      return new Promise((resolve, reject) => {
+        try {
+            let request_body = {
+                "recipient": {
+                    "id": sender_psid
+                },
+                "sender_action": "typing_on"
+            };
+
+            let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
+            request({
+                "uri": url,
+                "method": "POST",
+                "json": request_body
+
+            }, (err, res, body) => {
+                if (!err) {
+                    resolve("done!");
+                } else {
+                    reject("Unable to send message:" + err);
+                }
+            });
+
+        } catch (e) {
+            reject(e);
+        }
+    });
+  }
+
   // Sends response messages via the Send API
-  callSendAPI(sender_psid, response) {
+  async callSendAPI(sender_psid, response) {
+    // Action sender
+    await this.sendTypingOn(sender_psid)
+
     // Construct the message body
     let request_body = {
       recipient: {
         id: sender_psid,
       },
-      sender_action:"typing_on",
       message: response,
     };
 
@@ -52,6 +87,11 @@ class Chatbot {
       let reqMessage = received_message.text;
 
       switch(reqMessage){
+        case "help":
+            response = { 
+              text: this._helpCommand
+            }
+            break;
         case "girl":
           const imageURL = await girlAPI.getRandomGirlImage();
           response = { 

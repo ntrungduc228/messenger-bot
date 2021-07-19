@@ -44,7 +44,7 @@ class Chatbot {
     if (received_message.text) {
       console.log("---------", received_message.text);
 
-      const reqMessage = received_message.text;
+      let reqMessage = received_message.text;
 
       switch(reqMessage){
         case "girl":
@@ -60,6 +60,7 @@ class Chatbot {
           
           break;
         default:
+           reqMessage = encodeURI(reqMessage);
            response.text = await simsimiAPI.getMessage(reqMessage);
                       
            //await console.log('response', response);

@@ -1,41 +1,29 @@
 require("dotenv").config();
 const request = require("request");
-
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
-
 class GirlAPI{
-    constructor(){
-        //this._pageID = "697332711026460"; 637434912950811
-        this._pageID = "637434912950811";
-    }
 
     getRandomGirlImage(){
-        var randomIndex = Math.floor((Math.random() * maxIndex));
-
+        const maxIndex = 37000;
+        const perPage = 50;
+        const pageIndex = Math.floor(Math.random() * Math.floor(maxIndex/perPage));
+        const randomIndex = Math.floor(Math.random() * perPage);
+        console.log('randomIndex', randomIndex, 'pageIndex', pageIndex);
         return new Promise((resolve, reject) => {
             request({
-                url: `https://graph.facebook.com/v2.6/${this._pageID}/photos/`,
-                qs: {
-                    type : "uploaded",
-                    fields: "images",
-                    limit: 1,
-                    offset: randomIndex,
-                    access_token: PAGE_ACCESS_TOKEN
-                },
-                method: "GET"
+                url: `https://api.huynq.net/sosexy.php?api_key=28282300029828811123&api_user=j2team&app=gallery&page=${pageIndex}`,
+                method: 'GET'
             }, (err, response, body) => {
-                if (err) {
+                if(err){
                     reject(err);
-                    return;
                 }
-                
-                var rs = JSON.parse(body);
-                var imageUrl = rs.data[0].images[0].source; 
-                resolve(imageUrl);
-            });
-        });
 
+                var rs = JSON.parse(body);
+
+                //var imageURL = rs; 
+                var imageURL =  rs[1].data.photos[randomIndex].original.url;
+                resolve(imageURL)
+            })
+        })
     }
 }
 

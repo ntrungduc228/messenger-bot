@@ -8,6 +8,10 @@ const girlAPI = require("./GirlController");
 const simsimiAPI = require("./SimsimiController");
 
 class Chatbot {
+
+  constructor(){
+    
+  }
   
   // Sends response messages via the Send API
   callSendAPI(sender_psid, response) {
@@ -16,6 +20,7 @@ class Chatbot {
       recipient: {
         id: sender_psid,
       },
+      sender_action:"typing_on",
       message: response,
     };
 
@@ -48,11 +53,12 @@ class Chatbot {
 
       switch(reqMessage){
         case "girl":
+          const imageURL = await girlAPI.getRandomGirlImage();
           response = { 
               attachment:{
                 type:"image", 
                 payload:{
-                  url:"https://www.facebook.com/XinhNheNhang/photos/1597821270245499",
+                  url:imageURL,
                   is_reusable:true
                 }
               }

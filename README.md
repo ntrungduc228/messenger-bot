@@ -1,10 +1,7 @@
 # Facebook messenger chatbot
-
-## This chatbot integrates:
-
 ## Menu
 
 Simsimi
-filter girl's image (j2team girl)
+filter girl's image
 sleeping time
 food (angiday)

@@ -5,6 +5,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const girlAPI = require("./GirlController");
+const simsimiAPI = require("./SimsimiController");
 
 class Chatbot {
   
@@ -59,10 +60,17 @@ class Chatbot {
           
           break;
         default:
+            simsimiAPI.getMessage(reqMessage)
+                      .then(result => {
+                        response = {
+                          text: result
+                        }
+                      })
+            console.log('response', response);
           // Create the payload for a basic text message
-          response = {
+          /*response = {
             text: `You sent the message: "${received_message.text}". Now send me an image!`,
-          };
+          };*/
       }
 
       

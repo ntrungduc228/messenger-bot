@@ -123,14 +123,11 @@ class Chatbot {
   }
 
   // Sends response messages via the Send API
-  async callSendAPI(sender_psid, response) {
-
-    await this.sendTypingOn(sender_psid)
-
-    return new Promise((resolve, reject) => {
+  callSendAPI(sender_psid, response) {
+    return new Promise( async (resolve, reject) => {
       try {
         // Action sender
-        
+        await this.sendTypingOn(sender_psid);
         // Construct the message body
         let request_body = {
           recipient: {
@@ -150,8 +147,10 @@ class Chatbot {
           (err, res, body) => {
             if (!err) {
               console.log("message sent!");
+              resolve("message sent!");
             } else {
               console.error("Unable to send message:" + err);
+              reject("Unable to send message:" + err);
             }
           }
         );
@@ -202,7 +201,7 @@ class Chatbot {
           };
           break;
         case "girl":
-          this.handleSendGirlImage(sender_psid);
+          await this.handleSendGirlImage(sender_psid);
           return;
           break;
         default:
@@ -255,14 +254,14 @@ class Chatbot {
   }
 
   // Handles messaging_postbacks events
-  handlePostback(sender_psid, received_postback) {
+  async handlePostback(sender_psid, received_postback) {
     let response;
 
     // Get the payload for the postback
     let payload = received_postback.payload;
 
     if (payload === "continue") {
-      this.handleSendGirlImage(sender_psid);
+      await this.handleSendGirlImage(sender_psid);
     }
 
     // Set the response based on the postback payload

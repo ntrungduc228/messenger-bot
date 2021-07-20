@@ -253,24 +253,27 @@ class Chatbot {
     await this.callSendAPI(sender_psid, response);
   }
 
+  async handleQuickReply(sender_psid, received_payload) {
+    let payload = received_payload;
+    if(payload === "continue"){
+      this.handleSendGirlImage(sender_psid);
+    }
+  }
   // Handles messaging_postbacks events
   async handlePostback(sender_psid, received_postback) {
     let response;
 
     // Get the payload for the postback
     let payload = received_postback.payload;
-
-    if (payload === "continue") {
-      await this.handleSendGirlImage(sender_psid);
-    }
-
-    // Set the response based on the postback payload
-    /*if (payload === "yes") {
-      response = { text: "Thanks!" };
+    
+    if (payload === "yes") {
+        response = { text: "Thanks!" };
     } else if (payload === "no") {
-      response = { text: "Oops, try sending another image." };
+        response = { text: "Oops, try sending another image." };
     }
-    this.callSendAPI(sender_psid, response);*/
+    
+    this.callSendAPI(sender_psid, response);
+    
   }
 }
 

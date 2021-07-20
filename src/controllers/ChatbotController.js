@@ -114,6 +114,7 @@ class Chatbot {
   }
 
   async handleSendGirlImage(sender_psid){
+    let response;
     try{
       const imageURL = await girlAPI.getRandomGirlImage();
       response = { 

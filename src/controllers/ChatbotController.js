@@ -128,7 +128,6 @@ class Chatbot {
         }
 
         await this.callSendAPI(sender_psid, response);
-        await this.sendOptionContinue(sender_psid);
     }
     catch(err){
       response = {
@@ -152,7 +151,7 @@ class Chatbot {
     };
 
     // Send the HTTP request to the Messenger Platform
-    await request(
+    request(
       {
         uri: "https://graph.facebook.com/v2.6/me/messages",
         qs: { access_token: PAGE_ACCESS_TOKEN },
@@ -186,7 +185,7 @@ class Chatbot {
             }
             break;
         case "girl":
-          this.handleSendGirlImage(sender_psid);
+          await this.handleSendGirlImage(sender_psid);
           return;
           break;
         default:
@@ -249,7 +248,7 @@ class Chatbot {
     let payload = received_postback.payload;
 
     if(payload === "continue"){
-      this.handleSendGirlImage(sender_psid);
+      await this.handleSendGirlImage(sender_psid);
     }
 
     // Set the response based on the postback payload

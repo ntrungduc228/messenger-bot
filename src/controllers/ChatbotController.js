@@ -10,10 +10,7 @@ const simsimiAPI = require("./SimsimiController");
 class Chatbot {
 
   constructor(){
-    this._helpCommand = `Đây là các lệnh mà tôi hỗ trợ:
-    - girl: Ảnh gái ngẫu nhiên
-        
-    Và nhiều câu lệnh khác sẽ được cập nhật thêm`;
+    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm`;
   }
   
   sendMarkSeen(sender_psid){
@@ -75,6 +72,71 @@ class Chatbot {
     });
   }
 
+  sendOptionContinue(sender_psid){
+    // Construct the message body
+    let request_body = {
+      "recipient":{
+        "id":sender_psid,
+      },
+      "messaging_type": "RESPONSE",
+      "message":{
+        "text": "Pick a color:",
+        "quick_replies":[
+          {
+            "content_type":"text",
+            "title":"Ok luôn",
+            "payload":"continue",
+          },{
+            "content_type":"text",
+            "title":"Tiếp đê",
+            "payload":"continue",
+          }
+        ]
+      }
+    };
+
+    // Send the HTTP request to the Messenger Platform
+    request(
+      {
+        uri: "https://graph.facebook.com/v2.6/me/messages",
+        qs: { access_token: PAGE_ACCESS_TOKEN },
+        method: "POST",
+        json: request_body,
+      },
+      (err, res, body) => {
+        if (!err) {
+          console.log("message sent!");
+        } else {
+          console.error("Unable to send message:" + err);
+        }
+      }
+    );
+  }
+
+  async handleSendGirlImage(sender_psid){
+    try{
+      const imageURL = await girlAPI.getRandomGirlImage();
+      response = { 
+          attachment:{
+            type:"image", 
+            payload:{
+              url:imageURL,
+              is_reusable:true
+            }
+          }
+        }
+
+        await this.callSendAPI(sender_psid, response);
+        await this.sendOptionContinue(sender_psid);
+    }
+    catch(err){
+      response = {
+        text: `Bot ốm rùi. Lần sau bot gửi ảnh cho bạn nhé. Sorry !!!`
+      }
+      await this.callSendAPI(sender_psid, response);
+    }
+  }
+
   // Sends response messages via the Send API
   async callSendAPI(sender_psid, response) {
     // Action sender
@@ -115,6 +177,7 @@ class Chatbot {
       console.log("---------", received_message.text);
 
       let reqMessage = received_message.text;
+      reqMessage = encodeURI(reqMessage.toLowerCase());
 
       switch(reqMessage){
         case "help":
@@ -123,20 +186,10 @@ class Chatbot {
             }
             break;
         case "girl":
-          const imageURL = await girlAPI.getRandomGirlImage();
-          response = { 
-              attachment:{
-                type:"image", 
-                payload:{
-                  url:imageURL,
-                  is_reusable:true
-                }
-              }
-            }
-          
+          this.handleSendGirlImage(sender_psid);
+          return;
           break;
         default:
-           reqMessage = encodeURI(reqMessage);
            try{
             response.text = await simsimiAPI.getMessage(reqMessage);
            }
@@ -189,20 +242,23 @@ class Chatbot {
   }
 
   // Handles messaging_postbacks events
-  handlePostback(sender_psid, received_postback) {
+  async handlePostback(sender_psid, received_postback) {
     let response;
 
     // Get the payload for the postback
     let payload = received_postback.payload;
 
+    if(payload === "continue"){
+      this.handleSendGirlImage(sender_psid);
+    }
+
     // Set the response based on the postback payload
-    if (payload === "yes") {
+    /*if (payload === "yes") {
       response = { text: "Thanks!" };
     } else if (payload === "no") {
       response = { text: "Oops, try sending another image." };
     }
-    // Send the message to acknowledge the postback
-    this.callSendAPI(sender_psid, response);
+    this.callSendAPI(sender_psid, response);*/
   }
 
   

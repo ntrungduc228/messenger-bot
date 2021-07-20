@@ -80,7 +80,7 @@ class Chatbot {
       },
       "messaging_type": "RESPONSE",
       "message":{
-        "text": "Pick a color:",
+        "text": "Bạn muốn xem tiếp không?",
         "quick_replies":[
           {
             "content_type":"text",
@@ -141,7 +141,6 @@ class Chatbot {
   // Sends response messages via the Send API
   async callSendAPI(sender_psid, response) {
     // Action sender
-    //await this.sendMarkSeen(sender_psid);
     await this.sendTypingOn(sender_psid);
 
     // Construct the message body
@@ -153,7 +152,7 @@ class Chatbot {
     };
 
     // Send the HTTP request to the Messenger Platform
-    request(
+    await request(
       {
         uri: "https://graph.facebook.com/v2.6/me/messages",
         qs: { access_token: PAGE_ACCESS_TOKEN },

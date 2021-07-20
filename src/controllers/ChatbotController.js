@@ -8,163 +8,179 @@ const girlAPI = require("./GirlController");
 const simsimiAPI = require("./SimsimiController");
 
 class Chatbot {
-
-  constructor(){
+  constructor() {
     this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm`;
   }
-  
-  sendMarkSeen(sender_psid){
-      return new Promise((resolve, reject) => {
-          try {
-              let request_body = {
-                  "recipient": {
-                      "id": sender_psid
-                  },
-                  "sender_action": "mark_seen"
-              };
-  
-              let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
-              request({
-                  "uri": url,
-                  "method": "POST",
-                  "json": request_body
-  
-              }, (err, res, body) => {
-                  if (!err) {
-                      resolve("done!");
-                  } else {
-                      reject("Unable to send message:" + err);
-                  }
-              });
-          } catch (e) {
-              reject(e);
+
+  sendMarkSeen(sender_psid) {
+    return new Promise((resolve, reject) => {
+      try {
+        let request_body = {
+          recipient: {
+            id: sender_psid,
+          },
+          sender_action: "mark_seen",
+        };
+
+        let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
+        request(
+          {
+            uri: url,
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            if (!err) {
+              resolve("done!");
+            } else {
+              reject("Unable to send message:" + err);
+            }
           }
-      })
-  }
-
-  sendTypingOn(sender_psid){
-      return new Promise((resolve, reject) => {
-        try {
-            let request_body = {
-                "recipient": {
-                    "id": sender_psid
-                },
-                "sender_action": "typing_on",
-            };
-
-            let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
-            request({
-                "uri": url,
-                "method": "POST",
-                "json": request_body
-
-            }, (err, res, body) => {
-                if (!err) {
-                    resolve("done!");
-                } else {
-                    reject("Unable to send message:" + err);
-                }
-            });
-
-        } catch (e) {
-            reject(e);
-        }
+        );
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 
-  sendOptionContinue(sender_psid){
-    // Construct the message body
-    let request_body = {
-      "recipient":{
-        "id":sender_psid,
-      },
-      //"messaging_type": "RESPONSE",
-      "message":{
-        "text": "Bạn muốn xem tiếp không?",
-        "quick_replies":[
-          {
-            "content_type":"text",
-            "title":"Ok luôn",
-            "payload":"continue",
-          },{
-            "content_type":"text",
-            "title":"Tiếp đê",
-            "payload":"continue",
-          }
-        ]
-      }
-    };
+  sendTypingOn(sender_psid) {
+    return new Promise((resolve, reject) => {
+      try {
+        let request_body = {
+          recipient: {
+            id: sender_psid,
+          },
+          sender_action: "typing_on",
+        };
 
-    // Send the HTTP request to the Messenger Platform
-    request(
-      {
-        uri: "https://graph.facebook.com/v2.6/me/messages",
-        qs: { access_token: PAGE_ACCESS_TOKEN },
-        method: "POST",
-        json: request_body,
-      },
-      (err, res, body) => {
-        if (!err) {
-          console.log("message sent!");
-        } else {
-          console.error("Unable to send message:" + err);
-        }
+        let url = `https://graph.facebook.com/v6.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`;
+        request(
+          {
+            uri: url,
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            if (!err) {
+              resolve("done!");
+            } else {
+              reject("Unable to send message:" + err);
+            }
+          }
+        );
+      } catch (e) {
+        reject(e);
       }
-    );
+    });
+  }
+
+  sendOptionContinue(sender_psid) {
+    return new Promise((resolve, reject) => {
+      try {
+        // Construct the message body
+        let request_body = {
+          recipient: {
+            id: sender_psid,
+          },
+          //"messaging_type": "RESPONSE",
+          message: {
+            text: "Bạn muốn xem tiếp không?",
+            quick_replies: [
+              {
+                content_type: "text",
+                title: "Ok luôn",
+                payload: "continue",
+              },
+              {
+                content_type: "text",
+                title: "Tiếp đê",
+                payload: "continue",
+              },
+            ],
+          },
+        };
+
+        // Send the HTTP request to the Messenger Platform
+        request(
+          {
+            uri: "https://graph.facebook.com/v2.6/me/messages",
+            qs: { access_token: PAGE_ACCESS_TOKEN },
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            if (!err) {
+              console.log("message sent!");
+            } else {
+              console.error("Unable to send message:" + err);
+            }
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   // Sends response messages via the Send API
   async callSendAPI(sender_psid, response) {
-    // Action sender
-    await this.sendTypingOn(sender_psid);
 
-    // Construct the message body
-    let request_body = {
-      recipient: {
-        id: sender_psid,
-      },
-      message: response,
-    };
+    await this.sendTypingOn(sender_psid)
 
-    // Send the HTTP request to the Messenger Platform
-    request(
-      {
-        uri: "https://graph.facebook.com/v2.6/me/messages",
-        qs: { access_token: PAGE_ACCESS_TOKEN },
-        method: "POST",
-        json: request_body,
-      },
-      (err, res, body) => {
-        if (!err) {
-          console.log("message sent!");
-        } else {
-          console.error("Unable to send message:" + err);
-        }
-      }
-    );
-  }
+    return new Promise((resolve, reject) => {
+      try {
+        // Action sender
+        
+        // Construct the message body
+        let request_body = {
+          recipient: {
+            id: sender_psid,
+          },
+          message: response,
+        };
 
-  async handleSendGirlImage(sender_psid){
-    let response;
-    try{
-      const imageURL = await girlAPI.getRandomGirlImage();
-      response = { 
-          attachment:{
-            type:"image", 
-            payload:{
-              url:imageURL,
-              is_reusable:true
+        // Send the HTTP request to the Messenger Platform
+        request(
+          {
+            uri: "https://graph.facebook.com/v2.6/me/messages",
+            qs: { access_token: PAGE_ACCESS_TOKEN },
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            if (!err) {
+              console.log("message sent!");
+            } else {
+              console.error("Unable to send message:" + err);
             }
           }
-        }
-
-        await this.callSendAPI(sender_psid, response);
-        await this.sendOptionContinue(sender_psid);
-    }
-    catch(err){
-      response = {
-        text: `Bot ốm rùi. Lần sau bot gửi ảnh cho bạn nhé. Sorry !!!`
+        );
+      } catch (e) {
+        reject(e);
       }
+    });
+  }
+
+  async handleSendGirlImage(sender_psid) {
+    let response;
+    try {
+      const imageURL = await girlAPI.getRandomGirlImage();
+      response = {
+        attachment: {
+          type: "image",
+          payload: {
+            url: imageURL,
+            is_reusable: true,
+          },
+        },
+      };
+
+      await this.callSendAPI(sender_psid, response);
+      await this.sendOptionContinue(sender_psid);
+    } catch (err) {
+      response = {
+        text: `Bot ốm rùi. Lần sau bot gửi ảnh cho bạn nhé. Sorry !!!`,
+      };
       await this.callSendAPI(sender_psid, response);
     }
   }
@@ -179,32 +195,29 @@ class Chatbot {
       let reqMessage = received_message.text;
       reqMessage = encodeURI(reqMessage.toLowerCase());
 
-      switch(reqMessage){
+      switch (reqMessage) {
         case "help":
-            response = { 
-              text: this._helpCommand
-            }
-            break;
+          response = {
+            text: this._helpCommand,
+          };
+          break;
         case "girl":
           this.handleSendGirlImage(sender_psid);
           return;
           break;
         default:
-           try{
+          try {
             response.text = await simsimiAPI.getMessage(reqMessage);
-           }
-           catch(err){
-             console.log('error', err);
-           }
-                      
-           //await console.log('response', response);
-          // Create the payload for a basic text message
-          /*response = {
+          } catch (err) {
+            console.log("error", err);
+          }
+
+        //await console.log('response', response);
+        // Create the payload for a basic text message
+        /*response = {
             text: `You sent the message: "${received_message.text}". Now send me an image!`,
           };*/
       }
-
-      
     } else if (received_message.attachments) {
       // Get the URL of the message attachment
       let attachment_url = received_message.attachments[0].payload.url;
@@ -242,14 +255,14 @@ class Chatbot {
   }
 
   // Handles messaging_postbacks events
-  async handlePostback(sender_psid, received_postback) {
+  handlePostback(sender_psid, received_postback) {
     let response;
 
     // Get the payload for the postback
     let payload = received_postback.payload;
 
-    if(payload === "continue"){
-      await this.handleSendGirlImage(sender_psid);
+    if (payload === "continue") {
+      this.handleSendGirlImage(sender_psid);
     }
 
     // Set the response based on the postback payload
@@ -260,8 +273,6 @@ class Chatbot {
     }
     this.callSendAPI(sender_psid, response);*/
   }
-
-  
 }
 
 module.exports = new Chatbot();

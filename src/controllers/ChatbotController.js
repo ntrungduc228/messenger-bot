@@ -78,7 +78,7 @@ class Chatbot {
       "recipient":{
         "id":sender_psid,
       },
-      "messaging_type": "RESPONSE",
+      //"messaging_type": "RESPONSE",
       "message":{
         "text": "Bạn muốn xem tiếp không?",
         "quick_replies":[
@@ -93,6 +93,37 @@ class Chatbot {
           }
         ]
       }
+    };
+
+    // Send the HTTP request to the Messenger Platform
+    request(
+      {
+        uri: "https://graph.facebook.com/v2.6/me/messages",
+        qs: { access_token: PAGE_ACCESS_TOKEN },
+        method: "POST",
+        json: request_body,
+      },
+      (err, res, body) => {
+        if (!err) {
+          console.log("message sent!");
+        } else {
+          console.error("Unable to send message:" + err);
+        }
+      }
+    );
+  }
+
+  // Sends response messages via the Send API
+  async callSendAPI(sender_psid, response) {
+    // Action sender
+    await this.sendTypingOn(sender_psid);
+
+    // Construct the message body
+    let request_body = {
+      recipient: {
+        id: sender_psid,
+      },
+      message: response,
     };
 
     // Send the HTTP request to the Messenger Platform
@@ -128,6 +159,7 @@ class Chatbot {
         }
 
         await this.callSendAPI(sender_psid, response);
+        await this.sendOptionContinue(sender_psid);
     }
     catch(err){
       response = {
@@ -135,37 +167,6 @@ class Chatbot {
       }
       await this.callSendAPI(sender_psid, response);
     }
-  }
-
-  // Sends response messages via the Send API
-  async callSendAPI(sender_psid, response) {
-    // Action sender
-    await this.sendTypingOn(sender_psid);
-
-    // Construct the message body
-    let request_body = {
-      recipient: {
-        id: sender_psid,
-      },
-      message: response,
-    };
-
-    // Send the HTTP request to the Messenger Platform
-    request(
-      {
-        uri: "https://graph.facebook.com/v2.6/me/messages",
-        qs: { access_token: PAGE_ACCESS_TOKEN },
-        method: "POST",
-        json: request_body,
-      },
-      (err, res, body) => {
-        if (!err) {
-          console.log("message sent!");
-        } else {
-          console.error("Unable to send message:" + err);
-        }
-      }
-    );
   }
 
   async handleMessage(sender_psid, received_message) {
@@ -185,7 +186,7 @@ class Chatbot {
             }
             break;
         case "girl":
-          await this.handleSendGirlImage(sender_psid);
+          this.handleSendGirlImage(sender_psid);
           return;
           break;
         default:

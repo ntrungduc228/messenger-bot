@@ -256,7 +256,8 @@ class Chatbot {
   async handleQuickReply(sender_psid, received_payload) {
     let payload = received_payload;
     if(payload === "continue"){
-      this.handleSendGirlImage(sender_psid);
+      await this.sendMarkSeen(sender_psid);
+      await this.handleSendGirlImage(sender_psid);
     }
   }
   // Handles messaging_postbacks events

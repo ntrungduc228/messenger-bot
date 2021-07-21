@@ -195,6 +195,51 @@ class Chatbot {
     });
   }
 
+  getUserName(sender_psid){
+    return new Promise( async (resolve, reject) => {
+      try {
+        // Action sender
+        await this.sendTypingOn(sender_psid);
+        // Send the HTTP request to the Messenger Platform
+        request(
+          {
+            uri: `https://graph.facebook.com/${sender_psid}?fields=first_name,last_name,profile_pic&access_token=${PAGE_ACCESS_TOKEN}`,
+            method: "GET",
+          },
+          (err, res, body) => {
+            if (!err) {
+              console.log("message sent!");
+              let response = JSON.parse(body);
+              let username = `${response.first_name} ${response.last_name}`;
+              resolve(username);
+            } else {
+              console.error("Unable to send message:" + err);
+              reject(err);
+            }
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async handleGetStarted(sender_psid){
+    return new Promise ( async (resolve, reject) => {
+      try{
+        let username = await this.getUserName(sender_psid);
+        let response = {
+          text: `Hi ${username}, cảm ơn tin nhắn của bạn. Mời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ😊`
+        }
+        await this.callSendAPI(sender_psid, response);
+        resolve('done');
+      }
+      catch(e){
+        reject(e);
+      }
+    })
+  }
+
   async handleSendGirlImage(sender_psid) {
     let response;
     try {
@@ -311,9 +356,7 @@ class Chatbot {
         response = { text: "Oops, try sending another image." };
         break;
       case "GET_STARTED":
-        response = { 
-          text: `Hello , mời bạn gõ "help" để xem các câu lệnh 😊`
-         };
+        await this.handleGetStarted(sender_psid);
         break;
       default:
         response = { 

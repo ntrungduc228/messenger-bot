@@ -227,7 +227,7 @@ class Chatbot {
       try{
         let username = await this.getUserName(sender_psid);
         let response = {
-          text: `Hi ${username}, cảm ơn tin nhắn của bạn. Mời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ😊`
+          text: `Hi ${username}, cảm ơn tin nhắn của bạn.\n\nMời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ 😊`
         }
         await this.callSendAPI(sender_psid, response);
         resolve('done');

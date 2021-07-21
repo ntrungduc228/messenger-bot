@@ -227,7 +227,7 @@ class Chatbot {
       try{
         let username = await this.getUserName(sender_psid);
         let openText;
-        if(username !== " "){
+        if(username !== "undefined undefined"){
           openText = `Hi ${username}`;
         }else { openText = `Hello`};
 

@@ -226,8 +226,13 @@ class Chatbot {
     return new Promise ( async (resolve, reject) => {
       try{
         let username = await this.getUserName(sender_psid);
+        let openText;
+        if(username !== " "){
+          openText = `Hi ${username}`;
+        }else { openText = `Hello`};
+
         let response = {
-          text: `Hi ${username}, cảm ơn tin nhắn của bạn.\n\nMời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ 😊`
+          text: `${openText}, cảm ơn tin nhắn của bạn.\n\nMời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ 😊`
         }
         await this.callSendAPI(sender_psid, response);
         resolve('done');

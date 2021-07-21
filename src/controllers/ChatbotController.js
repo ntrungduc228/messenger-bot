@@ -9,7 +9,42 @@ const simsimiAPI = require("./SimsimiController");
 
 class Chatbot {
   constructor() {
-    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm`;
+    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm :tada:`;
+  }
+
+  setUpMessengerPlatform(){
+    return new Promise( async (resolve, reject) => {
+      try {
+        let request_body = {
+            "get_started": {
+              "payload": "GET_STARTED"
+          },
+          "whitelisted_domains": [
+            "https://chat-messenger-bot.herokuapp.com/"
+          ],
+        };
+
+       await request(
+          {
+            uri: `https://graph.facebook.com/v11.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+            qs: { access_token: PAGE_ACCESS_TOKEN },
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            if (!err) {
+              console.log("Setup user profile success!");
+              resolve("Setup user profile success!");
+            } else {
+              console.error("Unable to send message:" + err);
+              reject("Unable to send message:" + err);
+            }
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   sendMarkSeen(sender_psid) {
@@ -266,11 +301,16 @@ class Chatbot {
 
     // Get the payload for the postback
     let payload = received_postback.payload;
-    
+    if(payload) await this.sendMarkSeen();
+
     if (payload === "yes") {
         response = { text: "Thanks!" };
     } else if (payload === "no") {
         response = { text: "Oops, try sending another image." };
+    }else if (payload === "GET_STARTED"){
+      response = { 
+        text: `Hello. Mời bạn gõ "help" để xem các câu lệnh :blush:`
+       };
     }
     
     this.callSendAPI(sender_psid, response);

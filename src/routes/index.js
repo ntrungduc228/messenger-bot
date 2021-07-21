@@ -6,6 +6,8 @@ function route(app) {
 
     router.get('/webhook', homeController.getWebhook);
     router.post('/webhook', homeController.postWebhook);
+    router.get('/setup', homeController.handleSetup);
+
     router.get('/', homeController.getHomePage);
 
     app.use('/', router);

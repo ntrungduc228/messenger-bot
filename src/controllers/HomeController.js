@@ -10,6 +10,15 @@ class Home {
     res.send("Hom page. Server is running ...");
   };
 
+  handleSetup = async (req, res, next) => {
+    try{
+      await bot.setUpMessengerPlatform();
+      res.redirect('/');
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
 
   getWebhook(req, res, next) {
     // Parse the query params

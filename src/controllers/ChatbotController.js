@@ -198,8 +198,6 @@ class Chatbot {
   getUserName(sender_psid){
     return new Promise( async (resolve, reject) => {
       try {
-        // Action sender
-        await this.sendTypingOn(sender_psid);
         // Send the HTTP request to the Messenger Platform
         request(
           {
@@ -210,7 +208,7 @@ class Chatbot {
             if (!err) {
               console.log("message sent!");
               let response = JSON.parse(body);
-              let username = `${response.first_name} ${response.last_name}`;
+              let username = `${response.last_name} ${response.first_name}`;
               resolve(username);
             } else {
               console.error("Unable to send message:" + err);

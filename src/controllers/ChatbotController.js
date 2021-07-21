@@ -9,7 +9,7 @@ const simsimiAPI = require("./SimsimiController");
 
 class Chatbot {
   constructor() {
-    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm :tada:`;
+    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
   setUpMessengerPlatform(){
@@ -301,18 +301,26 @@ class Chatbot {
 
     // Get the payload for the postback
     let payload = received_postback.payload;
-    if(payload) await this.sendMarkSeen();
+    await this.sendMarkSeen();
 
-    if (payload === "yes") {
+    switch(payload){
+      case "yes":
         response = { text: "Thanks!" };
-    } else if (payload === "no") {
+        break;
+      case "no":
         response = { text: "Oops, try sending another image." };
-    }else if (payload === "GET_STARTED"){
-      response = { 
-        text: `Hello. Mời bạn gõ "help" để xem các câu lệnh :blush:`
-       };
+        break;
+      case "GET_STARTED":
+        response = { 
+          text: `Hello , mời bạn gõ "help" để xem các câu lệnh 😊`
+         };
+        break;
+      default:
+        response = { 
+          text: `Oop! I don't know response, please type "help" for seeing my commands 😊`
+         };
     }
-    
+
     this.callSendAPI(sender_psid, response);
     
   }

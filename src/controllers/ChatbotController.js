@@ -6,6 +6,7 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 const girlAPI = require("./GirlController");
 const simsimiAPI = require("./SimsimiController");
+const weatherAPI = require("./WeatherController");
 
 class Chatbot {
   constructor() {
@@ -243,6 +244,45 @@ class Chatbot {
     })
   }
 
+  async handleGetWeatherData(sender_psid, cityName){
+    let response;
+    try{
+      if(cityName){
+        const data = await weatherAPI.getWeatherData(cityName);
+        if(data.cod === 200){
+          response = {
+            text = `Tình hình thời tiết lúc này tại ${data.name}:
+            
+            + Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C 
+            
+            + Độ ẩm: ${data.main.humidity}
+
+            + Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}
+            
+            + ${data.weather.description}`,
+          }
+        }else {
+          response = {
+            text: data.message,
+          }
+        }
+      }else{
+        response = {
+          text: `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet hanoi (hoặc thoitiet Hà Nội)`
+        }
+      }
+      
+
+      await this.callSendAPI(sender_psid, response);
+    }
+    catch(err){ 
+      response = {
+        text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
+      };
+      await this.callSendAPI(sender_psid, response);
+    }
+  }
+
   async handleSendGirlImage(sender_psid) {
     let response;
     try {
@@ -261,7 +301,7 @@ class Chatbot {
       await this.sendOptionContinue(sender_psid);
     } catch (err) {
       response = {
-        text: `Bot ốm rùi. Lần sau bot gửi ảnh cho bạn nhé. Sorry !!!`,
+        text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
       };
       await this.callSendAPI(sender_psid, response);
     }
@@ -274,8 +314,17 @@ class Chatbot {
     if (received_message.text) {
       console.log("---------", received_message.text);
 
-      let reqMessage = received_message.text;
-      reqMessage = encodeURI(reqMessage.toLowerCase());
+      let reqMessage = received_message.text.toLowerCase();
+      let cityName;
+      if(reqMessage.includes("thoitiet")) {
+        cityName = reqMessage.slice(8);
+        reqMessage = weather;
+      }else if(reqMessage.includes("weather")){
+        cityName = reqMessage.slice(7);
+        reqMessage = weather;
+      }
+
+      reqMessage = encodeURI(reqMessage);
 
       switch (reqMessage) {
         case "help":
@@ -285,6 +334,10 @@ class Chatbot {
           break;
         case "girl":
           await this.handleSendGirlImage(sender_psid);
+          return;
+          break;
+        case "weather":
+          await this.handleGetWeatherData(sender_psid, cityName);
           return;
           break;
         default:

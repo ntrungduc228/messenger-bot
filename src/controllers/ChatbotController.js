@@ -10,7 +10,7 @@ const weatherAPI = require("./WeatherController");
 
 class Chatbot {
   constructor() {
-    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
+    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n+ thoitiet(hoặc weather) [thành phố]: Xem thời tiết. Ví dụ: thoitiet Hà Nội\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
   setUpMessengerPlatform(){
@@ -248,6 +248,7 @@ class Chatbot {
     let response;
     try{
       if(cityName){
+        cityName = cityName.trim();
         const data = await weatherAPI.getWeatherData(cityName);
         if(data.cod === 200){
           response = {
@@ -318,10 +319,10 @@ class Chatbot {
       let cityName;
       if(reqMessage.includes("thoitiet")) {
         cityName = reqMessage.slice(8);
-        reqMessage = weather;
+        reqMessage = "weather";
       }else if(reqMessage.includes("weather")){
         cityName = reqMessage.slice(7);
-        reqMessage = weather;
+        reqMessage = "weather";
       }
 
       reqMessage = encodeURI(reqMessage);
@@ -337,6 +338,7 @@ class Chatbot {
           return;
           break;
         case "weather":
+          console.log('city name:', cityName);
           await this.handleGetWeatherData(sender_psid, cityName);
           return;
           break;

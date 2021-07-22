@@ -251,14 +251,14 @@ class Chatbot {
         const data = await weatherAPI.getWeatherData(cityName);
         if(data.cod === 200){
           response = {
-            text = `Tình hình thời tiết lúc này tại ${data.name}:
+            text: `Tình hình thời tiết lúc này tại ${data.name}:
             
-            + Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C 
+            + Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C
             
             + Độ ẩm: ${data.main.humidity}
 
             + Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}
-            
+
             + ${data.weather.description}`,
           }
         }else {

@@ -24,7 +24,7 @@ class WeatherAPI {
                     
                     switch (data.cod){
                         case 400:
-                            data.message = `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet hanoi (hoặc thoitiet Hà Nội)`;
+                            data.message = `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet ha noi (hoặc thoitiet Hà Nội)`;
                             break;
                         case 401:
                             data.message = 'Lỗi gọi API cmnr. Thằng Ad làm ăn chán quá, bot sẽ kiện nó.\nCác bạn thông cảm lần sau thử lại nhé !!!';

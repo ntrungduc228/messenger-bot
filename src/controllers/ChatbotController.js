@@ -7,10 +7,19 @@ const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 const girlAPI = require("./GirlController");
 const simsimiAPI = require("./SimsimiController");
 const weatherAPI = require("./WeatherController");
+const covidAPI = require("./CovidController");
 
 class Chatbot {
   constructor() {
-    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n- thoitiet (hoặc weather) [thành phố]: Xem thời tiết. Ví dụ: thoitiet Hà Nội\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
+    this._helpCommand = `Các tính năng hiện có:
+
+- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại
+
+- thoitiet (hoặc weather) [thành phố]: Xem thời tiết. Ví dụ: thoitiet Hà Nội
+
+- covid (hoặc corona): Xem thống kê về COVID-19
+
+Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
   setUpMessengerPlatform(){
@@ -259,7 +268,7 @@ class Chatbot {
             
 + Độ ẩm: ${data.main.humidity}%
 
-+ Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}km/h
++ Sức gió: ${(data.wind.speed * 3.6).toFixed(2)} (km/h)
 
 + ${data.weather[0].description}`,
           }
@@ -283,6 +292,54 @@ class Chatbot {
       };
       await this.callSendAPI(sender_psid, response);
     }
+  }
+
+  async handleGetCovidData(sender_psid){
+    let response = {};
+    try{
+      let result = await covidAPI.getData();
+      let details = result.detail.data;
+      let totalConfirmed = 0;
+      let detailCity = ``;
+      
+      details.forEach((data) =>{
+        totalConfirmed += data.newConfirmed;
+        detailCity += `+ ${data.city}: ${data.newConfirmed}
+
+`;
+      });
+
+      response = {
+        text: `🌏 Thế giới:
++ Số ca nhiễm: ${result.gerenal.data[1].totalConfirmed}
++ Đang nhiễm:  ${result.gerenal.data[1].treatment}
++ Tử vong: ${result.gerenal.data[1].death}
++ Đã hồi phục: ${result.gerenal.data[1].totalRecovered}
+
+-----
+
+🇻🇳 Việt Nam:
++ Số ca nhiễm: ${result.gerenal.data[0].totalConfirmed}
++ Đang nhiễm: ${result.gerenal.data[0].treatment} 
++ Tử vong: ${result.gerenal.data[0].death}
++ Đã hồi phục: ${result.gerenal.data[0].totalRecovered}
+
+-----
+
+Có ${totalConfirmed} ca mắc mới:
+
+${detailCity}
+`,
+      };
+
+      await this.callSendAPI(sender_psid, response);
+    } 
+    catch(e){
+      response = {
+        text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
+      };
+      await this.callSendAPI(sender_psid, response);
+    }   
   }
 
   async handleSendGirlImage(sender_psid) {
@@ -339,6 +396,10 @@ class Chatbot {
         case "weather":
           console.log('city name:', cityName);
           await this.handleGetWeatherData(sender_psid, encodeURI(cityName));
+          return;
+          break;
+        case "covid":  case "conora":
+          await this.handleGetCovidData(sender_psid);
           return;
           break;
         default:

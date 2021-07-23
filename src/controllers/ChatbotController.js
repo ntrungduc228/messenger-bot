@@ -253,14 +253,14 @@ class Chatbot {
         if(data.cod === 200){
           response = {
             text: `Tình hình thời tiết lúc này tại ${data.name}:
-            
-            + Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C
-            
-            + Độ ẩm: ${data.main.humidity}
 
-            + Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}
++ Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C
+            
++ Độ ẩm: ${data.main.humidity}%
 
-            + ${data.weather.description}`,
++ Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}
+
++ ${data.weather[0].description}`,
           }
         }else {
           response = {

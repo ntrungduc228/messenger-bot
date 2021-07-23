@@ -9,7 +9,7 @@ function route(app) {
     router.get('/setup', homeController.handleSetup);
 
     router.get('/', homeController.getHomePage);
-
+    
     app.use('/', router);
 }
 

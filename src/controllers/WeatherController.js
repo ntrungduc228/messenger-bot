@@ -20,21 +20,14 @@ class WeatherAPI {
                     
                     console.log('body', body);
                     console.log('response', response);
-                    let data = {cod: '200'};
-                    //data = JSON.parse(body);
-                    try{
-                        data = JSON.parse(body);
-                    }
-                    catch(err){
-                        console.log('err', err);
-                    }
+                    let data = JSON.parse(body);
                     
                     switch (data.cod){
                         case 400:
                             data.message = `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet hanoi (hoặc thoitiet Hà Nội)`;
                             break;
                         case 401:
-                            data.message = 'Sai API Key cmnr. Thằng Ad làm ăn chán quá, bot sẽ kiện nó. Các bạn thông cảm lần sau thử lại nhé !!!';
+                            data.message = 'Lỗi gọi API cmnr. Thằng Ad làm ăn chán quá, bot sẽ kiện nó.\nCác bạn thông cảm lần sau thử lại nhé !!!';
                             break;
                         case 404:
                             data.message = 'Không tìm thấy kết quả. Hãy chắc chắn là bạn nhập đúng tên tỉnh/thành phố cần tra!';

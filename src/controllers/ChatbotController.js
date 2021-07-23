@@ -295,54 +295,52 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
   async handleGetCovidData(sender_psid){
-    return new Promise((resolve, reject) => {
-      let response = {};
-    try{
-      let result = await covidAPI.getData();
-      let details = result.detail.data;
-      let totalConfirmed = 0;
-      let detailCity = ``;
-      
-      details.forEach((data) =>{
-        totalConfirmed += data.newConfirmed;
-        detailCity += `+ ${data.city}: ${data.newConfirmed}
-  
-  `;
-      });
-  
-      response = {
-        text: `🌏 Thế giới:
-  + Số ca nhiễm: ${result.general.data[1].totalConfirmed}
-  + Đang nhiễm:  ${result.general.data[1].treatment}
-  + Tử vong: ${result.general.data[1].death}
-  + Đã hồi phục: ${result.general.data[1].totalRecovered}
-  
-  -----
-  
-  🇻🇳 Việt Nam:
-  + Số ca nhiễm: ${result.general.data[0].totalConfirmed}
-  + Đang nhiễm: ${result.general.data[0].treatment} 
-  + Tử vong: ${result.general.data[0].death}
-  + Đã hồi phục: ${result.general.data[0].totalRecovered}
-  
-  -----
-  
-  Có ${totalConfirmed} ca mắc mới:
-  
-  ${detailCity}
-  `,
-      };
-        
-      await this.callSendAPI(sender_psid, response);
+    let response = {};
+  try{
+    let result = await covidAPI.getData();
+    let details = result.detail.data;
+    let totalConfirmed = 0;
+    let detailCity = ``;
     
-    } 
-    catch(e){ console.log(e);
-      response = {
-        text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
-      };
-      await this.callSendAPI(sender_psid, response);
-    }   
-    })
+    details.forEach((data) =>{
+      totalConfirmed += data.newConfirmed;
+      detailCity += `+ ${data.city}: ${data.newConfirmed}
+
+`;
+    });
+
+    response = {
+      text: `🌏 Thế giới:
++ Số ca nhiễm: ${result.general.data[1].totalConfirmed}
++ Đang nhiễm:  ${result.general.data[1].treatment}
++ Tử vong: ${result.general.data[1].death}
++ Đã hồi phục: ${result.general.data[1].totalRecovered}
+
+-----
+
+🇻🇳 Việt Nam:
++ Số ca nhiễm: ${result.general.data[0].totalConfirmed}
++ Đang nhiễm: ${result.general.data[0].treatment} 
++ Tử vong: ${result.general.data[0].death}
++ Đã hồi phục: ${result.general.data[0].totalRecovered}
+
+-----
+
+Có ${totalConfirmed} ca mắc mới:
+
+${detailCity}
+`,
+    };
+      
+    await this.callSendAPI(sender_psid, response)
+  
+  } 
+  catch(e){ console.log(e);
+    response = {
+      text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
+    };
+    await this.callSendAPI(sender_psid, response)
+  }   
   }
 
   async handleSendGirlImage(sender_psid) {

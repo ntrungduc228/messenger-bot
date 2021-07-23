@@ -311,18 +311,18 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
 
       response = {
         text: `🌏 Thế giới:
-+ Số ca nhiễm: ${result.gerenal.data[1].totalConfirmed}
-+ Đang nhiễm:  ${result.gerenal.data[1].treatment}
-+ Tử vong: ${result.gerenal.data[1].death}
-+ Đã hồi phục: ${result.gerenal.data[1].totalRecovered}
++ Số ca nhiễm: ${result.general.data[1].totalConfirmed}
++ Đang nhiễm:  ${result.general.data[1].treatment}
++ Tử vong: ${result.general.data[1].death}
++ Đã hồi phục: ${result.general.data[1].totalRecovered}
 
 -----
 
 🇻🇳 Việt Nam:
-+ Số ca nhiễm: ${result.gerenal.data[0].totalConfirmed}
-+ Đang nhiễm: ${result.gerenal.data[0].treatment} 
-+ Tử vong: ${result.gerenal.data[0].death}
-+ Đã hồi phục: ${result.gerenal.data[0].totalRecovered}
++ Số ca nhiễm: ${result.general.data[0].totalConfirmed}
++ Đang nhiễm: ${result.general.data[0].treatment} 
++ Tử vong: ${result.general.data[0].death}
++ Đã hồi phục: ${result.general.data[0].totalRecovered}
 
 -----
 
@@ -334,7 +334,7 @@ ${detailCity}
 
       await this.callSendAPI(sender_psid, response);
     } 
-    catch(e){
+    catch(e){ console.log(e);
       response = {
         text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
       };
@@ -398,7 +398,7 @@ ${detailCity}
           await this.handleGetWeatherData(sender_psid, encodeURI(cityName));
           return;
           break;
-        case "covid":  case "conora":
+        case "covid":  case "corona":
           await this.handleGetCovidData(sender_psid);
           return;
           break;

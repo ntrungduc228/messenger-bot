@@ -12,6 +12,8 @@ class CovidAPI{
             try{
                 request({
                     url: this.__url,
+                    rejectUnauthorized: false,
+                    strictSSL: false,
                     method: "GET",
                 }, (error, response, body) => {
                     if(error){

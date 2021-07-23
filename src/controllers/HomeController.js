@@ -1,11 +1,13 @@
 require("dotenv").config();
 const request = require("request");
 const bot = require("./ChatbotController");
+const weatherAPI = require("./WeatherController");
 
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 class Home {
+
   getHomePage = (req, res, next) => {
     res.send("Hom page. Server is running ...");
   };

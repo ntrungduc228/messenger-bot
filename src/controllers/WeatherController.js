@@ -17,8 +17,17 @@ class WeatherAPI {
                         reject(err);
                     }
 
-                    const rs = JSON.parse(body);
-                    const data = rs;
+                    
+                    console.log('body', body);
+                    console.log('response', response);
+                    let data = {cod: '200'};
+                    //data = JSON.parse(body);
+                    try{
+                        data = JSON.parse(body);
+                    }
+                    catch(err){
+                        console.log('err', err);
+                    }
                     
                     switch (data.cod){
                         case 400:
@@ -34,10 +43,9 @@ class WeatherAPI {
                             data.message = 'Quá 60 yêu cầu mỗi phút là server quá tải, các bạn thử lại sau nhé. Sorry'
                             break; 
                         default:
-                            break; 
+                            break;
                     }
                     
-                    // case 200 -> successfully !!!
                     resolve(data);
                 })
             }

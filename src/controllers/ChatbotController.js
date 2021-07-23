@@ -10,7 +10,7 @@ const weatherAPI = require("./WeatherController");
 
 class Chatbot {
   constructor() {
-    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n+ thoitiet(hoặc weather) [thành phố]: Xem thời tiết. Ví dụ: thoitiet Hà Nội\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
+    this._helpCommand = `Các tính năng hiện có:\n\n- girl: Ảnh gái ngẫu nhiên từ 10 năm trở lại\n\n- thoitiet (hoặc weather) [thành phố]: Xem thời tiết. Ví dụ: thoitiet Hà Nội\n\n Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
   setUpMessengerPlatform(){
@@ -273,7 +273,7 @@ class Chatbot {
         }
       }
       
-
+      
       await this.callSendAPI(sender_psid, response);
     }
     catch(err){ 
@@ -318,14 +318,12 @@ class Chatbot {
       let reqMessage = received_message.text.toLowerCase();
       let cityName;
       if(reqMessage.includes("thoitiet")) {
-        cityName = reqMessage.slice(8);
+        cityName = reqMessage.slice(9);
         reqMessage = "weather";
       }else if(reqMessage.includes("weather")){
-        cityName = reqMessage.slice(7);
+        cityName = reqMessage.slice(8);
         reqMessage = "weather";
       }
-
-      reqMessage = encodeURI(reqMessage);
 
       switch (reqMessage) {
         case "help":
@@ -339,17 +337,17 @@ class Chatbot {
           break;
         case "weather":
           console.log('city name:', cityName);
-          await this.handleGetWeatherData(sender_psid, cityName);
+          await this.handleGetWeatherData(sender_psid, encodeURI(cityName));
           return;
           break;
         default:
+          //reqMessage = encodeURI(reqMessage);
           try {
-            response.text = await simsimiAPI.getMessage(reqMessage);
+            response.text = await simsimiAPI.getMessage(encodeURI(reqMessage));
           } catch (err) {
             console.log("error", err);
           }
 
-        //await console.log('response', response);
         // Create the payload for a basic text message
         /*response = {
             text: `You sent the message: "${received_message.text}". Now send me an image!`,

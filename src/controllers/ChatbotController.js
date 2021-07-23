@@ -251,6 +251,7 @@ class Chatbot {
         cityName = cityName.trim();
         const data = await weatherAPI.getWeatherData(cityName);
         if(data.cod === 200){
+          data.weather[0].description = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1)
           response = {
             text: `Tình hình thời tiết lúc này tại ${data.name}:
 
@@ -258,7 +259,7 @@ class Chatbot {
             
 + Độ ẩm: ${data.main.humidity}%
 
-+ Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}
++ Sức gió: ${(data.wind.speed * 3.6).toFixed(2)}km/h
 
 + ${data.weather[0].description}`,
           }

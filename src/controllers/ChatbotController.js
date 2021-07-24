@@ -303,7 +303,11 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
     let detailCity = ``;
     
     details.forEach((data) =>{
-      totalConfirmed += data.newConfirmed;
+      while(data.newConfirmed.includes(".")){
+        data.newConfirmed = data.newConfirmed.replace(".", "");
+      }
+
+      totalConfirmed += parseInt(data.newConfirmed);
       detailCity += `+ ${data.city}: ${data.newConfirmed}
 
 `;
@@ -326,7 +330,7 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
 
 -----
 
-Có ${totalConfirmed} ca mắc mới:
+Có ${totalConfirmed} ca mắc mới hôm nay:
 
 ${detailCity}
 `,

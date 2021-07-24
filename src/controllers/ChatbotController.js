@@ -279,7 +279,7 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
         }
       }else{
         response = {
-          text: `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet hanoi (hoặc thoitiet Hà Nội)`
+          text: `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet ha noi (hoặc thoitiet Hà Nội)`
         }
       }
       

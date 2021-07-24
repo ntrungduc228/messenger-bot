@@ -4,17 +4,17 @@ const { JSDOM } = jsdom;
 
 class CovidAPI{
     constructor(){
-        this.__url = "https://ncov.moh.gov.vn/";
+        this._url = "https://ncov.moh.gov.vn/";
     }
 
     getHTMLString(){
-      return new Promise(function (resolve, reject) {
+      return new Promise((resolve, reject) =>{
         try{
           request({
-            url: this.__url,
+            url: this._url,
             rejectUnauthorized: false,
             strictSSL: false,
-            method: "GET",
+            method: "GET", 
           }, (err, response, body) => {
             if(err){
               reject(err);
@@ -61,7 +61,6 @@ class CovidAPI{
             }
           }
   
-          console.log(table.children.length)
   
           for(let i=1; i<table.children.length; i++){
             let newConfirmed = table.children[i].children[2].textContent;

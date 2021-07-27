@@ -25,9 +25,6 @@ class GirlAPI{
         })
     }
 
-    getGirlImage(){
-        
-    }
 }
 
 module.exports = new GirlAPI();

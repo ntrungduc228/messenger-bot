@@ -4,10 +4,10 @@ const request = require("request");
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
-const girlAPI = require("./GirlController");
-const simsimiAPI = require("./SimsimiController");
-const weatherAPI = require("./WeatherController");
-const covidAPI = require("./CovidController");
+const girlAPI = require("../services/girlAPI");
+const simsimiAPI = require("../services/simAPI");
+const weatherAPI = require("../services/weatherAPI");
+const covidAPI = require("../services/covidAPI");
 
 class Chatbot {
   constructor() {

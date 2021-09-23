@@ -6,20 +6,66 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
 class Home {
-
   getHomePage = (req, res, next) => {
-    res.send("Hom page. Server is running ...");
+    res.render("homepage.ejs");
   };
+  setupPersistentMenu(req, res, next) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let request_body = {
+          persistent_menu: [
+            {
+              locale: "default",
+              composer_input_disabled: false,
+              call_to_actions: [
+                {
+                  type: "postback",
+                  title: "Restart Bot",
+                  payload: "RESTART_BOT",
+                },
+                // {
+                //     "type": "web_url",
+                //     "title": "Shop now",
+                //     "url": "https://www.originalcoastclothing.com/",
+                //     "webview_height_ratio": "full"
+                // }
+              ],
+            },
+          ],
+        };
+
+        await request(
+          {
+            uri: `https://graph.facebook.com/v11.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+            qs: { access_token: PAGE_ACCESS_TOKEN },
+            method: "POST",
+            json: request_body,
+          },
+          (err, res, body) => {
+            console.log(body);
+            if (!err) {
+              console.log("Setup persistent menu success!");
+              resolve("Setup persistent menu success!");
+            } else {
+              console.error("Unable to send message:" + err);
+              reject("Unable to send message:" + err);
+            }
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 
   handleSetup = async (req, res, next) => {
-    try{
+    try {
       await bot.setUpMessengerPlatform();
-      res.redirect('/');
-    }
-    catch(err){
+      res.redirect("/");
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   getWebhook(req, res, next) {
     // Parse the query params
@@ -60,10 +106,12 @@ class Home {
 
         // Check if the event is a message or postback and
         // pass the event to the appropriate handler function
-        if(webhook_event.message?.quick_reply){
-          bot.handleQuickReply(sender_psid, webhook_event.message.quick_reply.payload);
-        }
-        else if (webhook_event.message) {
+        if (webhook_event.message?.quick_reply) {
+          bot.handleQuickReply(
+            sender_psid,
+            webhook_event.message.quick_reply.payload
+          );
+        } else if (webhook_event.message) {
           bot.handleMessage(sender_psid, webhook_event.message);
         } else if (webhook_event.postback) {
           bot.handlePostback(sender_psid, webhook_event.postback);

@@ -22,19 +22,17 @@ class Chatbot {
 Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
   }
 
-  setUpMessengerPlatform(){
-    return new Promise( async (resolve, reject) => {
+  setUpMessengerPlatform() {
+    return new Promise(async (resolve, reject) => {
       try {
         let request_body = {
-            "get_started": {
-              "payload": "GET_STARTED"
+          get_started: {
+            payload: "GET_STARTED",
           },
-          "whitelisted_domains": [
-            "https://chat-messenger-bot.herokuapp.com/"
-          ],
+          whitelisted_domains: ["https://chat-messenger-bot.herokuapp.com/"],
         };
 
-       await request(
+        await request(
           {
             uri: `https://graph.facebook.com/v11.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
             qs: { access_token: PAGE_ACCESS_TOKEN },
@@ -169,7 +167,7 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
 
   // Sends response messages via the Send API
   callSendAPI(sender_psid, response) {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         // Action sender
         await this.sendTypingOn(sender_psid);
@@ -205,8 +203,8 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
     });
   }
 
-  getUserName(sender_psid){
-    return new Promise( async (resolve, reject) => {
+  getUserName(sender_psid) {
+    return new Promise(async (resolve, reject) => {
       try {
         // Send the HTTP request to the Messenger Platform
         request(
@@ -232,61 +230,64 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
     });
   }
 
-  async handleGetStarted(sender_psid){
-    return new Promise ( async (resolve, reject) => {
-      try{
+  async handleGetStarted(sender_psid) {
+    return new Promise(async (resolve, reject) => {
+      try {
         let username = await this.getUserName(sender_psid);
         let openText;
-        if(username !== "undefined undefined"){
+        if (username !== "undefined undefined") {
           openText = `Hi ${username}`;
-        }else { openText = `Hello`};
+        } else {
+          openText = `Hello`;
+        }
 
         let response = {
-          text: `${openText}, cảm ơn tin nhắn của bạn.\n\nMời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ 😊`
-        }
+          text: `${openText}, cảm ơn tin nhắn của bạn.\n\nMời bạn gõ "help" để xem các câu lệnh mà tôi hỗ trợ 😊`,
+        };
         await this.callSendAPI(sender_psid, response);
-        resolve('done');
-      }
-      catch(e){
+        resolve("done");
+      } catch (e) {
         reject(e);
       }
-    })
+    });
   }
 
-  async handleGetWeatherData(sender_psid, cityName){
+  async handleGetWeatherData(sender_psid, cityName) {
     let response;
-    try{
-      if(cityName){
+    try {
+      if (cityName) {
         cityName = cityName.trim();
         const data = await weatherAPI.getWeatherData(cityName);
-        if(data.cod === 200){
-          data.weather[0].description = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1)
+        if (data.cod === 200) {
+          data.weather[0].description =
+            data.weather[0].description.charAt(0).toUpperCase() +
+            data.weather[0].description.slice(1);
           response = {
             text: `Tình hình thời tiết lúc này tại ${data.name}:
 
-+ Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(data.main.temp_min)} - ${Math.round(data.main.temp_max)}°C
++ Nhiệt độ: ${Math.round(data.main.temp)}°C / ${Math.round(
+              data.main.temp_min
+            )} - ${Math.round(data.main.temp_max)}°C
             
 + Độ ẩm: ${data.main.humidity}%
 
 + Sức gió: ${(data.wind.speed * 3.6).toFixed(2)} (km/h)
 
 + ${data.weather[0].description}`,
-          }
-        }else {
+          };
+        } else {
           response = {
             text: data.message,
-          }
+          };
         }
-      }else{
+      } else {
         response = {
-          text: `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet ha noi (hoặc thoitiet Hà Nội)`
-        }
+          text: `Nhập tên tỉnh/thành phố cần tra theo cú pháp: thoitiet [city]\n\nVí dụ: thoitiet ha noi (hoặc thoitiet Hà Nội)`,
+        };
       }
-      
-      
+
       await this.callSendAPI(sender_psid, response);
-    }
-    catch(err){ 
+    } catch (err) {
       response = {
         text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
       };
@@ -294,27 +295,27 @@ Và các câu lệnh hữu ích khác sẽ được cập nhật thêm 🎉`;
     }
   }
 
-  async handleGetCovidData(sender_psid){
+  async handleGetCovidData(sender_psid) {
     let response = {};
-  try{
-    let result = await covidAPI.getData();
-    let details = result.detail.data;
-    let totalConfirmed = 0;
-    let detailCity = ``;
-    
-    details.forEach((data) =>{
-      while(data.newConfirmed.includes(".")){
-        data.newConfirmed = data.newConfirmed.replace(".", "");
-      }
+    try {
+      let result = await covidAPI.getData();
+      let details = result.detail.data;
+      let totalConfirmed = 0;
+      let detailCity = ``;
 
-      totalConfirmed += parseInt(data.newConfirmed);
-      detailCity += `+ ${data.city}: ${data.newConfirmed}
+      details.forEach((data) => {
+        while (data.newConfirmed.includes(".")) {
+          data.newConfirmed = data.newConfirmed.replace(".", "");
+        }
+
+        totalConfirmed += parseInt(data.newConfirmed);
+        detailCity += `+ ${data.city}: ${data.newConfirmed}
 
 `;
-    });
+      });
 
-    response = {
-      text: `🌏 Thế giới:
+      response = {
+        text: `🌏 Thế giới:
 + Số ca nhiễm: ${result.general.data[1].totalConfirmed}
 + Đang nhiễm:  ${result.general.data[1].treatment}
 + Tử vong: ${result.general.data[1].death}
@@ -334,17 +335,16 @@ Có ${totalConfirmed} ca mắc mới hôm nay:
 
 ${detailCity}
 `,
-    };
-      
-    await this.callSendAPI(sender_psid, response)
-  
-  } 
-  catch(e){ console.log(e);
-    response = {
-      text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
-    };
-    await this.callSendAPI(sender_psid, response)
-  }   
+      };
+
+      await this.callSendAPI(sender_psid, response);
+    } catch (e) {
+      console.log(e);
+      response = {
+        text: `Bot ốm rùi. Lần sau bạn thử lại nhé. Sorry !!!`,
+      };
+      await this.callSendAPI(sender_psid, response);
+    }
   }
 
   async handleSendGirlImage(sender_psid) {
@@ -380,10 +380,10 @@ ${detailCity}
 
       let reqMessage = received_message.text.toLowerCase();
       let cityName;
-      if(reqMessage.includes("thoitiet")) {
+      if (reqMessage.includes("thoitiet")) {
         cityName = reqMessage.slice(9);
         reqMessage = "weather";
-      }else if(reqMessage.includes("weather")){
+      } else if (reqMessage.includes("weather")) {
         cityName = reqMessage.slice(8);
         reqMessage = "weather";
       }
@@ -399,11 +399,12 @@ ${detailCity}
           return;
           break;
         case "weather":
-          console.log('city name:', cityName);
+          console.log("city name:", cityName);
           await this.handleGetWeatherData(sender_psid, encodeURI(cityName));
           return;
           break;
-        case "covid":  case "corona":
+        case "covid":
+        case "corona":
           await this.handleGetCovidData(sender_psid);
           return;
           break;
@@ -458,7 +459,7 @@ ${detailCity}
 
   async handleQuickReply(sender_psid, received_payload) {
     let payload = received_payload;
-    if(payload === "continue"){
+    if (payload === "continue") {
       await this.sendMarkSeen(sender_psid);
       await this.handleSendGirlImage(sender_psid);
     }
@@ -471,24 +472,24 @@ ${detailCity}
     let payload = received_postback.payload;
     await this.sendMarkSeen();
 
-    switch(payload){
+    switch (payload) {
       case "yes":
         response = { text: "Thanks!" };
         break;
       case "no":
         response = { text: "Oops, try sending another image." };
         break;
+      case "RESTART_BOT":
       case "GET_STARTED":
         await this.handleGetStarted(sender_psid);
         break;
       default:
-        response = { 
-          text: `Oop! I don't know response, please type "help" for seeing my commands 😊`
-         };
+        response = {
+          text: `Oop! I don't know response, please type "help" for seeing my commands 😊`,
+        };
     }
 
     this.callSendAPI(sender_psid, response);
-    
   }
 }
 
